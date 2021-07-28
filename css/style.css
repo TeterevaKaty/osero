@@ -22,3 +22,22 @@ body {
     color: white;
     content: "●";
 }
+
+.red:before {
+    color:red;
+    content: "●";
+}
+
+#points{
+    width: 400px;
+    height: 200px;
+    overflow: hidden;
+}
+#points>div, #points>p {
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    color: black;
+    font-size: 40px;
+}
+
