@@ -62,16 +62,12 @@ for (let i = 0; i < cells.length; i++) {
 }
 
 function clickAction(index) {
-    console.log("move start >>>");
-    console.log("click position " + index + " player " + turn % 2);
-
     if (isPosible(index)) {
         cells[index].classList.remove("red");
         cells[index].classList.add(color[turn % 2]);            
         
         for (let i = 0; i < directionArr.length; i++) {
-            opponentCheck(directionArr[i][0], directionArr[i][1], colorArrReturn(turn), index);    
-            console.log("opponents list " + opponentList);    
+            opponentCheck(directionArr[i][0], directionArr[i][1], colorArrReturn(turn), index);      
         }
         colorChange();
 
@@ -85,11 +81,9 @@ function clickAction(index) {
         turn++;
 
         if (color[turn % 2] == "black") {
-            console.log("background black");
             whoseTurn[1].style.background = "white";
             whoseTurn[0].style.background = "red";
         } else {
-            console.log("background white");
             whoseTurn[0].style.background = "white";
             whoseTurn[1].style.background = "red";    
         } 
@@ -109,13 +103,9 @@ function clickAction(index) {
 
 function isPosible (index) {
 
-    console.log("isPosible function called");
-
     if (cells[index].classList.value === "red") {
-        console.log("is posible true");
         return true;
     } else {
-        console.log("is posible false");
         return false;
     }
 }
@@ -144,26 +134,19 @@ function xAndYPos (index) {
 function directionCheck (directionX, directionY, plyaer_color) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j ++) {
-            if (boardColorArr[i][j] === plyaer_color) //look on cell with player color
+            if (boardColorArr[i][j] === plyaer_color) 
             {
                 let x = 1;
                 let y = 1;
 
-                //console.log("directionCheck " + directionX + " " + directionY);
-                while (((i + (x + 1) * directionX >= 0) && (j + (y + 1) * directionY >= 0) && (i + (x + 1) * directionX  < 8) && (j + (y + 1) * directionY  < 8)) ) { // and look for that cell possible move
-                   
+                while (((i + (x + 1) * directionX >= 0) && (j + (y + 1) * directionY >= 0) && (i + (x + 1) * directionX  < 8) && (j + (y + 1) * directionY  < 8)) ) { 
                         if ((boardColorArr[i + x * directionX][j + y * directionY ] != plyaer_color) && boardColorArr[i + x * directionX][j + y * directionY ] != 0) {
-
-                            //console.log("opponent position "+ boardArr[i + x * directionX][j + y * directionY]);
-
                             if (cells[boardArr[i + x * directionX + directionX][j + directionY * y + directionY]].classList.value != "black" &&  cells[boardArr[i + x * directionX + directionX][j + directionY * y + directionY]].classList.value != "white" ){
-                                cells[boardArr[i + x * directionX + directionX][j + directionY * y + directionY]].classList.add("red"); // proverit' eto uslovie
-                                //console.log("add red for opponent position " + boardArr[i + x * directionX + directionX][j + directionY * y + directionY] + " for direction " + directionX + " " + directionY);
+                                cells[boardArr[i + x * directionX + directionX][j + directionY * y + directionY]].classList.add("red");   
                                 canMove++;
                             }
     
                         } else {
-                            //console.log("no opponent on direction " + directionX + " " + directionY);
                             break;
                         }
                     x++;
@@ -175,40 +158,26 @@ function directionCheck (directionX, directionY, plyaer_color) {
 }
 
 function showPossibleMove (plyaer_color) {
-    console.log("showPossibleMove function called whith plyaer_color " +  plyaer_color);    
-
     for (let i = 0; i < directionArr.length; i++) {
         directionCheck(directionArr[i][0], directionArr[i][1], colorArrReturn(turn));        
     }
 
     if (canMove === 0 ) {
-        console.log("before canmove check ok");
-        console.log("points(-1)" + points(-1));
-        console.log("points(1)" + points(1));
-        console.log("points(-1) > points(1) " + (points(-1) > points(1)));
-        console.log("points(-1) < points(1) " + (points(-1) < points(1)));
-        console.log("points(-1) === points(1) " + (points(-1) === points(1)));
-
         let winner = document.getElementById('win');
-        let bPoints = points(-1);
-        let wPoints = points(1);
 
-
-        if (bPoints > wPoints) {
+        if (points(-1) > points(1)) {
            winner.textContent = "Black wins!";
         }
-        if (wPoints > bPoints){
+        if (points(1) > points(-1)){
            winner.textContent = "White wins!";
         }
-        if (bPoints === wPoints) {
+        if (points(-1) === points(1)) {
             winner.textContent = "Draw!";
         }
-    }
-  
+    } 
 }
 
 function opponentCheck(directionX, directionY, plyaer_color, clickPos) {
-    console.log("opponentCheck function called whith collor " + plyaer_color + ", from posotion " + clickPos + " and direction " + directionX + " " + directionY);
     let posX = 0;
     let posY = 0;
 
@@ -231,16 +200,9 @@ function opponentCheck(directionX, directionY, plyaer_color, clickPos) {
                 if (((posX + (x - 1)  * directionX >= 0) && (posY + (y - 1)* directionY >=0) && (posX + (x - 1) * directionX <8) && (posY + (y - 1) * directionY < 8))){
                     opponentList.push((boardArr[posX + x * directionX][posY + y * directionY]));
                     boardColorArr[posX + x * directionX][posY + y * directionY] = colorArrReturn(turn);
-                    console.log("color chengeded arr " );
-                    console.log(boardColorArr);
                     x = 0;
                     y = 0;
-                    
-                    console.log("opponent list added " + opponentList);      
-                
-                } else {
-                    console.log("no opponent in list");
-                }                       
+                }                      
             }            
         }       
         x++;
@@ -251,18 +213,14 @@ function opponentCheck(directionX, directionY, plyaer_color, clickPos) {
 function colorChange () {
     playerColor = color[turn % 2];
     oponentColor =  color[(turn + 1) % 2];
-    console.log("colorChange function called whith collor " + playerColor );
 
     for (let l = 0; l < opponentList.length; l++) {
-        console.log("color change for opponent posotion " + opponentList[l]);
         cells[opponentList[l]].classList.remove(oponentColor);
         cells[opponentList[l]].classList.add(playerColor);
-        console.log("color changed for cell " + opponentList[l]);
     }
 }
 
 function points (plyaerColor) {
-    console.log("points function called for " + plyaerColor);
     let playerPoints = 0;
 
     for (let i = 0; i < 8; i++) {
@@ -276,25 +234,12 @@ function points (plyaerColor) {
 }
 
 function pointsOut () {
-    console.log("pointsOut function called");
     let pBlack = document.getElementById('black_points');
     let pWhite = document.getElementById('white_points');
 
     pBlack.innerHTML = points(-1);
     pWhite.textContent = points(1);
-
-    console.log("before canmove check");
-    console.log("canMove " + canMove);
 }
-
-/*function winnerCheck() {
-    console.log("winnerCheck function called");
-    console.log("black points " + points(-1));
-    console.log("black points " );
-    console.log("white points " + points(1));
-
-
-}*/
 
 function notOutBoard(posI, posJ) {
     if ((posI >= 0) && (posI < 8) && (posJ >= 0) && (posJ < 8)) {

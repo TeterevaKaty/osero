@@ -2,7 +2,7 @@ body {
     font-size: 65px;
 }
 
-.boardCells{
+.boardCells {
  background-color: black;
 }
 
@@ -18,7 +18,7 @@ body {
     content: "●";
 }
 
-.white:before{
+.white:before {
     color: white;
     content: "●";
 }
@@ -28,7 +28,7 @@ body {
     content: "●";
 }
 
-#points{
+#points {
     width: 350px;
     height: 55px;
     overflow: hidden;
@@ -40,5 +40,10 @@ body {
     display: inline-block;
     color: black;
     font-size: 40px;
+}
+
+#win {
+    text-align: center;
+    width: 350px;
 }
 
