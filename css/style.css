@@ -29,13 +29,14 @@ body {
 }
 
 #points{
-    width: 400px;
-    height: 200px;
+    width: 350px;
+    height: 55px;
     overflow: hidden;
 }
 #points>div, #points>p {
-    width: 100px;
-    height: 100px;
+    text-align: center;
+    width: 50px;
+    height: 50px;
     display: inline-block;
     color: black;
     font-size: 40px;
