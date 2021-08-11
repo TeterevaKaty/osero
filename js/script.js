@@ -1,16 +1,9 @@
 let cells = document.querySelectorAll("#board th");
-let turn = 0;
-let color = ["black","white"];
-let clickPosition = 0;
-let checkPosition = 0;
-let xPos = 0;
-let yPos = 0;
-let canMove = 0;
-let direction = '';
-let opponentList =[];
-let pointsBlack = 0;
-let pointsWhite = 0;
 let whoseTurn = document.querySelectorAll('#turn');
+let turn = 0;
+let canMove = 0;
+let color = ["black","white"];
+let opponentList =[];
    
 let boardColorArr = [                // 1 - white; -1 - black
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -58,11 +51,11 @@ whoseTurn[0].style.background = "red";
 showPossibleMove (colorArrReturn(turn));
 
 for (let i = 0; i < cells.length; i++) {
-    cells[i].addEventListener("click", function(){clickAction(i)}, false);  
+    cells[i].addEventListener("click", function(){doClickAction(i)}, false);  
 }
 
-function clickAction(index) {
-    if (isPosible(index)) {
+function doClickAction(index) {
+    if (checkPosible(index)) {
         cells[index].classList.remove("red");
         cells[index].classList.add(color[turn % 2]);            
         
@@ -101,7 +94,7 @@ function clickAction(index) {
     showPossibleMove (colorArrReturn(turn));   
 }
 
-function isPosible (index) {
+function checkPosible (index) {
 
     if (cells[index].classList.value === "red") {
         return true;
@@ -116,19 +109,6 @@ function colorArrReturn(player) {
 
 function colorClassReturn(player) {
     return player === -1 ? color[0] : color[1];
-}
-
-function xAndYPos (index) {
-    console.log("xAndYPos function called");   
-    for (let i = 0; i < 8; i++) {
-        for (let j = 0; j <8; j++) {
-            if (boardArr[i][j] === index) {
-                xPos = i;
-                yPos = j;
-                console.log(i,j);
-            }
-        }
-    } 
 }
 
 function directionCheck (directionX, directionY, plyaer_color) {
@@ -220,7 +200,7 @@ function colorChange () {
     }
 }
 
-function points (plyaerColor) {
+function pointsCount (plyaerColor) {
     let playerPoints = 0;
 
     for (let i = 0; i < 8; i++) {
@@ -237,14 +217,6 @@ function pointsOut () {
     let pBlack = document.getElementById('black_points');
     let pWhite = document.getElementById('white_points');
 
-    pBlack.innerHTML = points(-1);
-    pWhite.textContent = points(1);
-}
-
-function notOutBoard(posI, posJ) {
-    if ((posI >= 0) && (posI < 8) && (posJ >= 0) && (posJ < 8)) {
-        return true;
-    } else {
-        return false;
-    }
+    pBlack.innerHTML = pointsCount (-1);
+    pWhite.textContent = pointsCount (1);
 }
