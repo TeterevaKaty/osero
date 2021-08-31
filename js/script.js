@@ -1,4 +1,5 @@
 let cells = document.querySelectorAll("#board th");
+let cell;
 let whoseTurn = document.querySelectorAll('#turn');
 let turn = 0;
 let canMove = 0;
@@ -27,17 +28,6 @@ const directionArr = [
     [1, 1]
 ];
 
-    boardArr = [
-    [0, 1, 2, 3, 4, 5, 6, 7],
-    [8, 9, 10, 11, 12, 13, 14, 15],
-    [16, 17, 18, 19, 20, 21, 22, 23],
-    [24, 25, 26, 27, 28, 29, 30, 31],
-    [32, 33, 34, 35, 36, 37, 38, 39],
-    [40, 41, 42, 43, 44, 45, 46, 47],
-    [48, 49, 50, 51, 52, 53, 54, 55],
-    [56, 57, 58, 59, 60, 61, 62, 63],
-];
-
 function startPosition() {
     cells[27].classList.add("white"); 
     cells[28].classList.add("black");
@@ -48,29 +38,24 @@ function startPosition() {
 window.onload = startPosition;
 
 whoseTurn[0].style.background = "red";
-showPossibleMove (colorArrReturn(turn));
+showPossibleMove ();
 
 for (let i = 0; i < cells.length; i++) {
-    cells[i].addEventListener("click", function(){doClickAction(i)}, false);  
+    cells[i].addEventListener("click", function(){doClickAction(i)}, false); 
 }
 
 function doClickAction(index) {
+    cell = document.getElementById(index);
+
     if (checkPosible(index)) {
         cells[index].classList.remove("red");
         cells[index].classList.add(color[turn % 2]);            
         
         for (let i = 0; i < directionArr.length; i++) {
-            opponentCheck(directionArr[i][0], directionArr[i][1], colorArrReturn(turn), index);      
+            opponentCheck(directionArr[i][0], directionArr[i][1], colorArrReturn(turn));      
         }
         colorChange();
-
-        for (let i = 0; i < 8; i++) {
-            for (let j = 0; j < 8; j++) {
-                if (boardArr[i][j] === index){
-                    boardColorArr[i][j] = colorArrReturn(turn);
-                }
-            }
-        }
+        boardColorArr[cell.dataset.x][cell.dataset.y] = colorArrReturn(turn);
         turn++;
 
         if (color[turn % 2] == "black") {
@@ -91,7 +76,7 @@ function doClickAction(index) {
     canMove = 0; 
     opponentList = [];
 
-    showPossibleMove (colorArrReturn(turn));   
+    showPossibleMove ();   
 }
 
 function checkPosible (index) {
@@ -111,7 +96,7 @@ function colorClassReturn(player) {
     return player === -1 ? color[0] : color[1];
 }
 
-function directionCheck (directionX, directionY, plyaer_color) {
+function directionCheck (dirX, dirY, plyaer_color) {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j ++) {
             if (boardColorArr[i][j] === plyaer_color) 
@@ -119,10 +104,18 @@ function directionCheck (directionX, directionY, plyaer_color) {
                 let x = 1;
                 let y = 1;
 
-                while (((i + (x + 1) * directionX >= 0) && (j + (y + 1) * directionY >= 0) && (i + (x + 1) * directionX  < 8) && (j + (y + 1) * directionY  < 8)) ) { 
-                        if ((boardColorArr[i + x * directionX][j + y * directionY ] != plyaer_color) && boardColorArr[i + x * directionX][j + y * directionY ] != 0) {
-                            if (cells[boardArr[i + x * directionX + directionX][j + directionY * y + directionY]].classList.value != "black" &&  cells[boardArr[i + x * directionX + directionX][j + directionY * y + directionY]].classList.value != "white" ){
-                                cells[boardArr[i + x * directionX + directionX][j + directionY * y + directionY]].classList.add("red");   
+                let nextCheckPosX = i + (x + 1) * dirX; 
+                let nextCheckPosY = j + (y + 1) * dirY;
+
+                let checkPos = 0;
+                let nextCheckPos  = 0;
+
+                while (notEndOfBoard(nextCheckPosX,nextCheckPosY)) {                     
+                    checkPos = boardColorArr[i + x * dirX][j + y * dirY];  // the next position from the checked position 
+                    nextCheckPos = document.querySelector('th[data-x="' + nextCheckPosX + '"][data-y="' + nextCheckPosY + '"]'); // from the click position, check the next position in the direction
+                    if ((checkPos != plyaer_color) && checkPos != 0) {
+                            if (nextCheckPos.classList.value != "black" &&  nextCheckPos.classList.value != "white" ){
+                                nextCheckPos.classList.add("red");   //show possible move by red color
                                 canMove++;
                             }
     
@@ -130,14 +123,17 @@ function directionCheck (directionX, directionY, plyaer_color) {
                             break;
                         }
                     x++;
-                    y++;              
+                    y++; 
+
+                    nextCheckPosX = i + (x + 1) * dirX; 
+                    nextCheckPosY = j + (y + 1) * dirY;             
                 }
             }
         }
     }
 }
 
-function showPossibleMove (plyaer_color) {
+function showPossibleMove () {
     for (let i = 0; i < directionArr.length; i++) {
         directionCheck(directionArr[i][0], directionArr[i][1], colorArrReturn(turn));        
     }
@@ -157,36 +153,41 @@ function showPossibleMove (plyaer_color) {
     } 
 }
 
-function opponentCheck(directionX, directionY, plyaer_color, clickPos) {
-    let posX = 0;
-    let posY = 0;
-
-    for(let i = 0; i < 8; i++) {                    //get click position x and y
-        for (let j = 0; j < 8; j++) {
-            if (boardArr[i][j] === clickPos) {
-                posX = i;
-                posY = j;
-            }
-        }
-    }
-
+function opponentCheck(dirX, dirY, plyaer_color) {
+    let posX = Number(cell.dataset.x);
+    let posY = Number(cell.dataset.y);
     let x = 1;
     let y = 1;
+    let opNextCheckPosX = posX + (x + 1) * dirX; 
+    let opNextCheckPosY = posY + (y + 1) * dirY;
+    let opChekPosX = posX + x * dirX; 
+    let opChekPosY = posY + y * dirY; 
+    let goBackPosX = posX + (x - 1)  * dirX; 
+    let goBackPosY = posY + (y - 1) * dirY;
 
-    while (((posX + (x + 1) * directionX >= 0) && (posY + (y + 1) * directionY >= 0) && (posX + (x + 1) * directionX  < 8) && (posY + (y + 1) * directionY  < 8)) ) { // and look for that cell possible move
+    while (notEndOfBoard(opNextCheckPosX, opNextCheckPosY)) { // and look for that cell possible move
+        let opCheckPos = boardColorArr[opChekPosX][opChekPosY];
 
-        if (boardColorArr[posX + x * directionX][posY + y * directionY] === (plyaer_color* -1)){           
-            if (boardColorArr[posX + (x + 1) * directionX][posY + (y + 1) * directionY] === plyaer_color) {                  
-                if (((posX + (x - 1)  * directionX >= 0) && (posY + (y - 1)* directionY >=0) && (posX + (x - 1) * directionX <8) && (posY + (y - 1) * directionY < 8))){
-                    opponentList.push((boardArr[posX + x * directionX][posY + y * directionY]));
-                    boardColorArr[posX + x * directionX][posY + y * directionY] = colorArrReturn(turn);
+        if (opCheckPos === (plyaer_color* -1)){           
+            if (boardColorArr[opNextCheckPosX][opNextCheckPosY] === plyaer_color) {                  
+                if (notEndOfBoard(goBackPosX, goBackPosY)){
+
+                    let opCellIdByDataXY = document.querySelector('th[data-x="' + opChekPosX + '"][data-y="' + opChekPosY + '"]').id;
+                    opponentList.push(opCellIdByDataXY);
+                    boardColorArr[opChekPosX][opChekPosY] = colorArrReturn(turn);
+
                     x = 0;
                     y = 0;
                 }                      
             }            
-        }       
+        }      
         x++;
-        y++;                      
+        y++;      
+        
+        opNextCheckPosX = posX + (x + 1) * dirX; 
+        opNextCheckPosY = posY + (y + 1) * dirY;
+        goBackPosX = posX + (x - 1)  * dirX; 
+        goBackPosY = posY + (y - 1) * dirY;
     }  
 }
 
@@ -219,4 +220,12 @@ function pointsOut () {
 
     pBlack.innerHTML = pointsCount (-1);
     pWhite.textContent = pointsCount (1);
+}
+
+function notEndOfBoard(xPos, yPos) {
+    if ((xPos >= 0) && (yPos >= 0) && (xPos < 8) && (yPos  < 8)) {
+        return true;
+    } else {
+        return false;
+    }
 }
