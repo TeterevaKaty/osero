@@ -5,6 +5,7 @@ let turn = 0;
 let canMove = 0;
 let color = ["black","white"];
 let opponentList =[];
+let isTest = true;
    
 let boardColorArr = [                // 1 - white; -1 - black
         [0, 0, 0, 0, 0, 0, 0, 0],
@@ -38,13 +39,15 @@ function startPosition() {
 window.onload = startPosition;
 
 whoseTurn[0].style.background = "red";
-showPossibleMove ();
+showPossibleMove();
 
 for (let i = 0; i < cells.length; i++) {
     cells[i].addEventListener("click", function(){doClickAction(i)}, false); 
 }
 
 function doClickAction(index) {
+    console.log("click cell " + index + " whith turn " + color[turn % 2]);
+
     cell = document.getElementById(index);
 
     if (checkPosible(index)) {
@@ -58,13 +61,7 @@ function doClickAction(index) {
         boardColorArr[cell.dataset.x][cell.dataset.y] = colorArrReturn(turn);
         turn++;
 
-        if (color[turn % 2] == "black") {
-            whoseTurn[1].style.background = "white";
-            whoseTurn[0].style.background = "red";
-        } else {
-            whoseTurn[0].style.background = "white";
-            whoseTurn[1].style.background = "red";    
-        } 
+        showWhoseTurn();
     }   
     
     pointsOut();
@@ -79,13 +76,21 @@ function doClickAction(index) {
     showPossibleMove ();   
 }
 
-function checkPosible (index) {
+function showWhoseTurn() {
+    if (color[turn % 2] == "black") {
+        whoseTurn[1].style.background = "white";
+        whoseTurn[0].style.background = "red";
+    } else {
+        whoseTurn[0].style.background = "white";
+        whoseTurn[1].style.background = "red";    
+    } 
+}
 
+function checkPosible (index) {
     if (cells[index].classList.value === "red") {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 function colorArrReturn(player) {
@@ -113,6 +118,7 @@ function directionCheck (dirX, dirY, plyaer_color) {
                 while (notEndOfBoard(nextCheckPosX,nextCheckPosY)) {                     
                     checkPos = boardColorArr[i + x * dirX][j + y * dirY];  // the next position from the checked position 
                     nextCheckPos = document.querySelector('th[data-x="' + nextCheckPosX + '"][data-y="' + nextCheckPosY + '"]'); // from the click position, check the next position in the direction
+                   
                     if ((checkPos != plyaer_color) && checkPos != 0) {
                             if (nextCheckPos.classList.value != "black" &&  nextCheckPos.classList.value != "white" ){
                                 nextCheckPos.classList.add("red");   //show possible move by red color
@@ -141,14 +147,39 @@ function showPossibleMove () {
     if (canMove === 0 ) {
         let winner = document.getElementById('win');
 
-        if (points(-1) > points(1)) {
-           winner.textContent = "Black wins!";
-        }
-        if (points(1) > points(-1)){
-           winner.textContent = "White wins!";
-        }
-        if (points(-1) === points(1)) {
-            winner.textContent = "Draw!";
+        inArr=function(val,arr){
+            for ( let i = 0 ; i < arr.length; i++) {
+                if(arr[i]==val){
+                return true;
+                }
+                if('object'==typeof arr[i]){
+                    if(inArr(val,arr[i])){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }; 
+
+        console.log("in arr are 0   " + (inArr(0, boardColorArr)));
+          
+        if (!inArr(0, boardColorArr)){
+            if (pointsCount(-1) > pointsCount(1)) {
+                winner.textContent = "Black wins!";
+             }
+             if (pointsCount(1) > pointsCount(-1)){
+                winner.textContent = "White wins!";
+             }
+             if (pointsCount(-1) === pointsCount(1)) {
+                 winner.textContent = "Draw!";
+             }
+        } else {
+            console.log(boardColorArr);
+            turn++;
+            alert("You have no moves available! Turn goes to another player.");
+            console.log("turn changed from " +color[(turn-1) % 2]+ " to " + color[turn % 2] );
+            showWhoseTurn();
+            showPossibleMove();
         }
     } 
 }
@@ -171,11 +202,9 @@ function opponentCheck(dirX, dirY, plyaer_color) {
         if (opCheckPos === (plyaer_color* -1)){           
             if (boardColorArr[opNextCheckPosX][opNextCheckPosY] === plyaer_color) {                  
                 if (notEndOfBoard(goBackPosX, goBackPosY)){
-
                     let opCellIdByDataXY = document.querySelector('th[data-x="' + opChekPosX + '"][data-y="' + opChekPosY + '"]').id;
                     opponentList.push(opCellIdByDataXY);
                     boardColorArr[opChekPosX][opChekPosY] = colorArrReturn(turn);
-
                     x = 0;
                     y = 0;
                 }                      
@@ -183,7 +212,6 @@ function opponentCheck(dirX, dirY, plyaer_color) {
         }      
         x++;
         y++;      
-        
         opNextCheckPosX = posX + (x + 1) * dirX; 
         opNextCheckPosY = posY + (y + 1) * dirY;
         goBackPosX = posX + (x - 1)  * dirX; 
